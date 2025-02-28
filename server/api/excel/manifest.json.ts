@@ -2,7 +2,7 @@
  * @Author: peerless_hero peerless_hero@outlook.com
  * @Date: 2024-12-24 01:53:35
  * @LastEditors: peerless_hero peerless_hero@outlook.com
- * @LastEditTime: 2025-03-01 02:41:23
+ * @LastEditTime: 2025-03-01 03:50:22
  * @FilePath: \nuxt3-lobechat-plugin\server\api\excel\manifest.json.ts
  * @Description:
  *
@@ -29,11 +29,10 @@ export default defineEventHandler(async (event) => {
             data: {
               type: 'array',
               description: 'A 2D array representing the data for the Excel file.  The first array contains the headers (column names).  Subsequent arrays represent rows of data. All rows must have the same number of columns as the header row.',
-              required: true,
               items: {
                 type: 'array',
                 items: {
-                  type: ['string', 'number', 'boolean', 'null'],
+                  type: 'string',
                   description: 'Value of a cell, can be string, number, boolean or null',
                 },
               },
@@ -46,17 +45,16 @@ export default defineEventHandler(async (event) => {
             filename: {
               type: 'string',
               description: 'Optional. The desired filename for the generated Excel file (without the .xlsx extension). Defaults to \'generated\'.',
-              required: false,
             },
             expire: {
               type: 'integer',
               description: 'Optional. The desired expiration time for the generated URL, in seconds. Defaults to 3600 (1 hour).',
-              required: false,
               minimum: 60,
               maximum: 604800,
             },
           },
           type: 'object',
+          required: ['data'],
         },
         responses: {
           201: {
