@@ -2,13 +2,14 @@
  * @Author: peerless_hero peerless_hero@outlook.com
  * @Date: 2025-03-01 00:51:43
  * @LastEditors: peerless_hero peerless_hero@outlook.com
- * @LastEditTime: 2025-03-01 02:56:15
+ * @LastEditTime: 2025-03-01 03:49:36
  * @FilePath: \nuxt3-lobechat-plugin\server\api\excel\xlsx.post.ts
  * @Description:
  *
  */
 import process from 'node:process'
 import { AwsClient } from 'aws4fetch'
+import consola from 'consola'
 // nuxt3 环境下，xlsx 需要使用 xlsx.mjs
 import * as XLSX from 'xlsx/xlsx.mjs'
 
@@ -32,7 +33,10 @@ interface ResponseBody {
 
 export default defineEventHandler(async (event) => {
   try {
-    const body: RequestBody = await readBody(event)
+    let body: RequestBody = await readBody(event)
+    if (typeof body === 'string') {
+      body = JSON.parse(body)
+    }
     const { data, expire = 3600, filename = 'generated' } = body
     if (!data || !Array.isArray(data) || data.length === 0 || !Array.isArray(data[0])) {
       throw createError({ statusCode: 400, statusMessage: 'Invalid request body: data is required and must be a non-empty 2D array.' })
@@ -64,7 +68,7 @@ export default defineEventHandler(async (event) => {
       console.error('S3 Upload failed:', uploadRequest.status, errorText)
       throw createError({ statusCode: 500, statusMessage: `S3 upload failed: ${uploadRequest.status} - ${errorText}` })
     }
-
+    consola.info('Excel 上传成功:', s3Key)
     // 使用 aws4fetch 获取预签名 URL (GET 请求)
     const signedUrl = await aws.sign(`${s3Url}?X-Amz-Expires=${expire}`, {
       aws: {
