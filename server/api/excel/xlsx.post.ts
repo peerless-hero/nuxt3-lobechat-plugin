@@ -2,20 +2,20 @@
  * @Author: peerless_hero peerless_hero@outlook.com
  * @Date: 2025-03-01 00:51:43
  * @LastEditors: peerless_hero peerless_hero@outlook.com
- * @LastEditTime: 2025-03-01 02:32:52
+ * @LastEditTime: 2025-03-01 02:56:15
  * @FilePath: \nuxt3-lobechat-plugin\server\api\excel\xlsx.post.ts
  * @Description:
  *
  */
-import { env } from 'node:process'
+import process from 'node:process'
 import { AwsClient } from 'aws4fetch'
 // nuxt3 环境下，xlsx 需要使用 xlsx.mjs
 import * as XLSX from 'xlsx/xlsx.mjs'
 
 // 初始化 AwsClient
 const aws = new AwsClient({
-  accessKeyId: env.S3_ACCESS_KEY_ID!,
-  secretAccessKey: env.S3_SECRET_ACCESS_KEY!,
+  accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
   service: 's3', // 很重要，必须是 's3' 或其他您使用的 AWS 服务
 })
 
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
 
     // 构建 S3 对象 URL
     const s3Key = `excel/${filename}-${Date.now()}.xlsx`
-    const s3Url = `${env.S3_ENDPOINT}/${s3Key}`
+    const s3Url = `${process.env.S3_ENDPOINT}/${s3Key}`
 
     // 使用 aws4fetch 上传
     const uploadRequest = await aws.fetch(s3Url, {
